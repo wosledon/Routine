@@ -8,16 +8,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Routine.Api.DtoParameters;
 using Routine.Api.Helpers;
+using Routine.Api.Models;
 
 namespace Routine.Api.Services
 {
     public class CompanyRepository: ICompanyRepository
     {
         public readonly RoutineDbContext _context;
+        private readonly IPropertyMappingService _propertyMappingService;
 
-        public CompanyRepository(RoutineDbContext context)
+        public CompanyRepository(
+            RoutineDbContext context,
+            IPropertyMappingService propertyMappingService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _propertyMappingService = propertyMappingService
+                ?? throw new ArgumentNullException(nameof(propertyMappingService));
         }
 
         public async Task<PagedList<Company>> GetCompaniesAsync(CompanyDtoParameters parameters)
@@ -169,7 +175,9 @@ namespace Routine.Api.Services
             //    }
             //}
 
-            items.ApplySort(parameters.OrderBy, mappingDictionay);
+            var mappingDictionary = _propertyMappingService.GetPropertyMapping<EmployeeDto, Employee>();
+
+            items = items.ApplySort(parameters.OrderBy, mappingDictionary);
 
             //return await items.OrderBy(x => x.EmployeeNo)
             //    .ToListAsync();
