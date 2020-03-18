@@ -19,6 +19,12 @@ namespace Routine.Api.Data
             modelBuilder.Entity<Company>()
                 .Property(x => x.Name).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<Company>()
+                .Property(x => x.Country).HasMaxLength(50);
+            modelBuilder.Entity<Company>()
+                .Property(x => x.Industry).HasMaxLength(50);
+            modelBuilder.Entity<Company>()
+                .Property(x => x.Product).HasMaxLength(100);
+            modelBuilder.Entity<Company>()
                 .Property(x => x.Introduction).HasMaxLength(500);
 
             modelBuilder.Entity<Employee>()

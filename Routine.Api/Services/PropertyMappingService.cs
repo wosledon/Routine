@@ -9,6 +9,17 @@ namespace Routine.Api.Services
 {
     public class PropertyMappingService : IPropertyMappingService
     {
+        private readonly Dictionary<string, PropertyMappingValue> _compaPropertyMapping
+            = new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"Id", new PropertyMappingValue(new List<string> {"Id"})},
+                {"CompanyName", new PropertyMappingValue(new List<string> {"Name"})},
+                {"Country", new PropertyMappingValue(new List<string> {"Country"})},
+                {"Industry", new PropertyMappingValue(new List<string> {"Industry"})},
+                {"Product", new PropertyMappingValue(new List<string> {"Product"})},
+                {"Introduction", new PropertyMappingValue(new List<string> {"Introduction"})},
+            };
+
         private readonly Dictionary<string, PropertyMappingValue> _employeePropertyMapping
             = new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
             {
@@ -25,6 +36,7 @@ namespace Routine.Api.Services
         public PropertyMappingService()
         {
             _propertyMappings.Add(new PropertyMapping<EmployeeDto, Employee>(_employeePropertyMapping));
+            _propertyMappings.Add(new PropertyMapping<CompanyDto, Company>(_compaPropertyMapping));
         }
 
         public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>()
@@ -37,6 +49,33 @@ namespace Routine.Api.Services
             }
 
             throw new Exception($"无法找到唯一的映射关系: {typeof(TSource)}, {typeof(TDestination)}");
+        }
+
+        public bool ValidMappingExistsFor<TSource, TDestination>(string fields)
+        {
+            var propertyMapping = GetPropertyMapping<TSource, TDestination>();
+
+            if (string.IsNullOrWhiteSpace(fields))
+            {
+                return true;
+            }
+
+            var fieldAfterSplit = fields.Split(",");
+            foreach (var field in fieldAfterSplit)
+            {
+                var trimmedField = field.Trim();
+                var indexOfFirstSpace = trimmedField.IndexOf(" ", StringComparison.Ordinal);
+                var propertyName = indexOfFirstSpace == -1
+                    ? trimmedField
+                    : trimmedField.Remove(indexOfFirstSpace);
+
+                if (!propertyMapping.ContainsKey(propertyName))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -59,6 +59,10 @@ namespace Routine.Api.Services
 
             //return await queryExpression.ToListAsync();
 
+            var mappingDictionary = _propertyMappingService.GetPropertyMapping<CompanyDto, Company>();
+
+            queryExpression = queryExpression.ApplySort(parameters.OrderBy, mappingDictionary);
+
             return await PagedList<Company>.CreateAsync(queryExpression, parameters.PageNumber, parameters.PageSize);
         }
 
