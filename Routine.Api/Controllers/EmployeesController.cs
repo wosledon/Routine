@@ -27,7 +27,7 @@ namespace Routine.Api.Controllers
             _companyRepository = companyRepository ?? throw new ArgumentNullException(nameof(companyRepository));
         }
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetEmployeesForCompany))]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> 
             GetEmployeesForCompany(Guid companyId, 
                 [FromQuery]EmployeeDtoParameters parameters)
@@ -65,7 +65,7 @@ namespace Routine.Api.Controllers
             return Ok(employeeDto);
         }
 
-        [HttpPost]
+        [HttpPost(Name = nameof(CreateEmployeeForCompany))]
         public async Task<ActionResult<EmployeeDto>>
             CreateEmployeeForCompany(Guid companyId, EmployeeAddDto employee)
         {
